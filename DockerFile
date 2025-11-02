@@ -1,5 +1,0 @@
-FROM  ngnix 
-
-COPY index.html /user/share/ngnix/html
-
-EXPOSE 80
