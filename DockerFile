@@ -1,4 +1,4 @@
-From  ngnix 
+FROM  ngnix 
 
 COPY index.html /user/share/ngnix/html
 
