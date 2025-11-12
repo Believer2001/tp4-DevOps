@@ -33,7 +33,7 @@ stage('Test image') {
         script {
           docker.withRegistry( '', REGISTRY_CREDENTIAL_ID ) {
           dockerImage.push()
-        }-
+        }
       }
     }
   }
