@@ -37,15 +37,12 @@ pipeline {
       steps{
         script {
           docker.withRegistry( '', REGISTRY_CREDENTIAL_ID ) {
-            // CORRECTION 1: Use DOCKER_IMAGE for push
             DOCKER_IMAGE.push()
-            // CORRECTION 2: Push the 'latest' tag (best practice)
             DOCKER_IMAGE.push('latest')
           }
         }
       }
     }
     
-    // You can add a separate 'Deployment' stage here if needed, which uses the 'latest' tag.
-  } // <--- Closing brace for 'stages'
-} // <--- Closing brace for 'pipeline' (THIS WAS LIKELY MISSING)
+  } 
+} 
