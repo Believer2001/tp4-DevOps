@@ -45,22 +45,20 @@ pipeline {
       }
     }
 
-    {
-      steps{
-        script {
-            echo "Tentative de déploiement de l'image ${REGISTRY_REPO}:latest..."
-            
-            // 1. Arrêter et supprimer l'ancien conteneur s'il existe (|| true ignore l'erreur s'il n'existe pas)
-            sh "docker rm -f ${CONTAINER_NAME} || true" 
-            
-            // 2. Lancer un nouveau conteneur en utilisant l'image 'latest' fraîchement poussée
-            // Mappage du port 80 (conteneur) vers le port 8081 (hôte Jenkins/VM)
-            sh "docker run -d -p 8089:80 --name ${CONTAINER_NAME} ${REGISTRY_REPO}:latest"
-            
-            echo "Déploiement terminé. L'application devrait être accessible sur http://<IP_DE_VOTRE_VM>:8081"
-        }
-      }
+ stage('Deploy image') {
+  steps{
+    script {
+        // Technique plus robuste pour Windows/bat : Tester avant de supprimer
+        bat "docker stop ${CONTAINER_NAME}"
+        bat "docker rm ${CONTAINER_NAME}" 
+        
+        // Déploiement
+        bat "docker run -d -p 8089:80 --name ${CONTAINER_NAME} ${REGISTRY_REPO}:latest"
+        
+        echo "Déploiement terminé. L'application devrait être accessible sur http://<IP_DE_VOTRE_VM>:8081"
     }
+  }
+}
     
   } 
 } 
