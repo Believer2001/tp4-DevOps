@@ -46,19 +46,30 @@ pipeline {
     }
 
  stage('Deploy image') {
-  steps{
-    script {
-        // Technique plus robuste pour Windows/bat : Tester avant de supprimer
-        bat "docker stop ${CONTAINER_NAME}"
-        bat "docker rm ${CONTAINER_NAME}" 
-        
-        // Déploiement
-        bat "docker run -d -p 8089:80 --name ${CONTAINER_NAME} ${REGISTRY_REPO}:latest"
-        
-        echo "Déploiement terminé. L'application devrait être accessible sur http://<IP_DE_VOTRE_VM>:8081"
+      steps{
+        script {
+            echo "Tentative de nettoyage de l'ancien conteneur..."
+            
+            // UTILISATION DU TRY-CATCH POUR IGNORER L'ERREUR 'No such container'
+            try {
+                // Arrêter et supprimer l'ancien conteneur (si existant)
+                bat "docker stop ${CONTAINER_NAME}"
+                bat "docker rm ${CONTAINER_NAME}" 
+                echo "Ancien conteneur ${CONTAINER_NAME} supprimé avec succès."
+            } catch (Exception e) {
+                // Ignore l'erreur si le conteneur n'existe pas lors du premier déploiement
+                echo "INFO: Le conteneur ${CONTAINER_NAME} n'existe pas. Continuer le déploiement."
+            }
+            
+            echo "Lancement du nouveau conteneur..."
+            // Lancer le nouveau conteneur (Utilisation de :latest)
+            // Assurez-vous que le port 8099 est libre sur votre hôte Windows/VM
+            bat "docker run -d -p 8089:80 --name ${CONTAINER_NAME} ${REGISTRY_REPO}:latest"
+            
+            echo "Déploiement terminé. Vérifiez l'application sur le port 8081."
+        }
+      }
     }
-  }
-}
     
   } 
 } 
